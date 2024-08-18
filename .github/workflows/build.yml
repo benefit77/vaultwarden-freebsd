@@ -1,46 +1,47 @@
-name: Build vaultwarden for FreeBSD
+name: Build
 
 on: workflow_dispatch
 
 jobs:
-  build:
-    runs-on: macos-12
-    
+  test:
+    runs-on: ubuntu-latest
+    name: Build
     steps:
-    - name: Checkout Vaultwarden
-      uses: actions/checkout@v2
-      with:
-        repository: dani-garcia/vaultwarden
-        fetch-depth: 1
-
-    - name: Setup FreeBSD VM
-      uses: vmactions/freebsd-vm@v0
+    - uses: actions/checkout@v4
+    
+    - name: Build on FreeBSD
+      uses: vmactions/freebsd-vm@v1
       with:
         usesh: true
+        release: 13.2
         prepare: |
-          pkg install -y curl
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          source $HOME/.cargo/env
-          rustup default stable
-          pkg install -y gmake gcc pkgconf openssl sqlite3
-
-    - name: Build Vaultwarden
-      uses: vmactions/freebsd-vm@v0
-      with:
-        usesh: true
+          pkg install -y wget curl git gcc bash gawk gsed gmake pkgconf openssl sqlite3
+          wget https://dl.google.com/go/go1.22.0.freebsd-amd64.tar.gz && tar -C /usr/local -xzf go1.22.0.freebsd-amd64.tar.gz && rm go1.22.0.freebsd-amd64.tar.gz
+          ln -s /usr/local/go/bin/go /usr/local/bin/go
+          # 安装 nvm 并使用它来安装 Node.js 20
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+          echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
+          echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+          echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> ~/.bashrc
+          source ~/.bashrc
+          bash -c 'source ~/.bashrc && nvm install 20'
         run: |
-          source $HOME/.cargo/env
-          cargo build --release --features sqlite
+          export LATEST_APP=$(wget -qO- https://api.github.com/repos/navidrome/navidrome/tags | gawk -F '["v]' '/name/{print "v"\$5;exit}')
+          git clone -b $LATEST_APP https://github.com/navidrome/navidrome
+          cd navidrome
+          gmake setup
+          gmake build
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@main
       with:
-        name: vaultwarden-freebsd-amd64
-        path: target/release/vaultwarden
+        name: navidrome-freebsd
+        path: |
+            navidrome/navidrome # 确保路径和生成的二进制文件匹配
 
     - name: Generate release tag
       id: tag
-      run: echo "release_tag=$(curl -sSL https://api.github.com/repos/dani-garcia/vaultwarden/tags | jq -r '.[0].name')" >> $GITHUB_OUTPUT
+      run: echo "release_tag=$(wget -qO- https://api.github.com/repos/navidrome/navidrome/tags | gawk -F '["v]' '/name/{print "v"\$5;exit}')" >> $GITHUB_OUTPUT
 
     - name: Create release
       uses: softprops/action-gh-release@v1
@@ -48,7 +49,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
-        files: vaultwarden/target/release/vaultwarden
+        files: |
+              navidrome/navidrome
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
