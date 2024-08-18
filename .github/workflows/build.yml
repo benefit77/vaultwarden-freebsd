@@ -1,0 +1,59 @@
+name: Build vaultwarden for FreeBSD
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: macos-12
+    
+    steps:
+    - name: Checkout Vaultwarden
+      uses: actions/checkout@v2
+      with:
+        repository: dani-garcia/vaultwarden
+        fetch-depth: 1
+
+    - name: Setup FreeBSD VM
+      uses: vmactions/freebsd-vm@v0
+      with:
+        usesh: true
+        prepare: |
+          pkg install -y curl
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          source $HOME/.cargo/env
+          rustup default stable
+          pkg install -y gmake gcc pkgconf openssl sqlite3
+
+    - name: Build Vaultwarden
+      uses: vmactions/freebsd-vm@v0
+      with:
+        usesh: true
+        run: |
+          source $HOME/.cargo/env
+          cargo build --release --features sqlite
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: vaultwarden-freebsd-amd64
+        path: target/release/vaultwarden
+
+    - name: Generate release tag
+      id: tag
+      run: echo "release_tag=$(curl -sSL https://api.github.com/repos/dani-garcia/vaultwarden/tags | jq -r '.[0].name')" >> $GITHUB_OUTPUT
+
+    - name: Create release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        files: vaultwarden/target/release/vaultwarden
+
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 1
+        keep_minimum_runs: 8
