@@ -9,10 +9,7 @@ jobs:
     
     steps:
     - name: Checkout Vaultwarden
-      uses: actions/checkout@v2
-      with:
-        repository: dani-garcia/vaultwarden
-        fetch-depth: 1
+      uses: actions/checkout@v4
 
     - name: Build Vaultwarden
       uses: vmactions/freebsd-vm@v1
@@ -27,13 +24,16 @@ jobs:
           pkg install -y gmake gcc pkgconf openssl sqlite3
         run: |
           source $HOME/.cargo/env
-          cargo build --release --features sqlite
+          export LATEST_APP=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print "v"$5;exit}')
+          git clone -b $LATEST_APP https://github.com/dani-garcia/vaultwarden
+          cd vaultwarden
+          cargo build --features sqlite --release
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: vaultwarden-freebsd-amd64
-        path: target/release/vaultwarden
+        path: vaultwarden/target/release/vaultwarden
 
     - name: Generate release tag
       id: tag
@@ -46,7 +46,7 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         files: |
-              target/release/vaultwarden
+              vaultwarden/target/release/vaultwarden
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
