@@ -14,21 +14,17 @@ jobs:
         repository: dani-garcia/vaultwarden
         fetch-depth: 1
 
-    - name: Setup FreeBSD VM
-      uses: vmactions/freebsd-vm@v0
+    - name: Build Vaultwarden
+      uses: vmactions/freebsd-vm@v1
       with:
         usesh: true
+        release: 13.2
         prepare: |
           pkg install -y curl
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           source $HOME/.cargo/env
           rustup default stable
           pkg install -y gmake gcc pkgconf openssl sqlite3
-
-    - name: Build Vaultwarden
-      uses: vmactions/freebsd-vm@v0
-      with:
-        usesh: true
         run: |
           source $HOME/.cargo/env
           cargo build --release --features sqlite
