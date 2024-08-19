@@ -15,7 +15,7 @@ jobs:
       uses: vmactions/freebsd-vm@v1
       with:
         usesh: true
-        release: 13.1
+        release: 13.2
         prepare: |
           pkg update
           pkg install -y bash curl git gmake gcc pkgconf openssl sqlite3 ca_root_nss
