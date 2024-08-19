@@ -17,7 +17,6 @@ jobs:
         usesh: true
         release: 14.1
         prepare: |
-          pkg update
           pkg install -y bash curl git gmake gcc pkgconf openssl sqlite3 ca_root_nss
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           
