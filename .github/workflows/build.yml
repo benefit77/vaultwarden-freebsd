@@ -15,19 +15,13 @@ jobs:
       uses: vmactions/freebsd-vm@v1
       with:
         usesh: true
-        release: 13.2
+        release: 14.1
         prepare: |
           pkg update
           pkg install -y curl git gmake gcc pkgconf openssl sqlite3
-
-    - name: Install Rust
-      uses: vmactions/freebsd-vm@v1
-      with:
-        usesh: true
-        run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
-          source ~/.bashrc
+          echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.profile
+          source ~/.profile
           rustc --version
           cargo --version
           
