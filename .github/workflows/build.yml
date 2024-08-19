@@ -18,12 +18,13 @@ jobs:
         release: 13.2
         prepare: |
           pkg install -y curl
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          source $HOME/.cargo/env
-          rustup default stable
-          pkg install -y gmake gcc pkgconf openssl sqlite3
+          pkg install -y gmake gcc pkgconf openssl sqlite3 rustup
+          
+    - name: Build Vaultwarden
+      uses: vmactions/freebsd-vm@v1
+      with:
+        usesh: true
         run: |
-          source $HOME/.cargo/env
           export LATEST_APP=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print "v"$5;exit}')
           git clone -b $LATEST_APP https://github.com/dani-garcia/vaultwarden
           cd vaultwarden
