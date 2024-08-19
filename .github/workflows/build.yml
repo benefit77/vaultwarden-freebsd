@@ -20,6 +20,17 @@ jobs:
           pkg update
           pkg install -y wget curl git gcc bash gawk gsed pkgconf openssl rust sqlite3 ca_root_nss
         run: |
+          echo "Setting up environment..."
+          export PATH="/usr/local/bin:$PATH"
+          rustc -Vv
+          cargo -V
+
+    - name: Build
+      uses: vmactions/freebsd-vm@v1
+      with:
+        usesh: true
+        release: 13.2
+        run: |
           export LATEST_APP=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print $4;exit}')
           git clone -b $LATEST_APP https://github.com/dani-garcia/vaultwarden
           cd vaultwarden
