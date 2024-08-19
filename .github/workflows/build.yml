@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     
     steps:
@@ -20,13 +20,15 @@ jobs:
           pkg update
           pkg install -y bash curl git gmake gcc pkgconf openssl sqlite3 ca_root_nss
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          
+          echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $HOME/.profile
+          . $HOME/.profile
+
     - name: Build Vaultwarden
       uses: vmactions/freebsd-vm@v1
       with:
         usesh: true
         run: |
-          source $HOME/.cargo/env
+          export PATH="$HOME/.cargo/bin:$PATH"
           export LATEST_APP=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print "v"$5;exit}')
           git clone -b $LATEST_APP https://github.com/dani-garcia/vaultwarden
           cd vaultwarden
