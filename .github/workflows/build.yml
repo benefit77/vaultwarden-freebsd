@@ -18,7 +18,7 @@ jobs:
         release: 13.2
         prepare: |
           pkg update
-          pkg install -y bash curl git gmake gcc pkgconf openssl sqlite3 ca_root_nss
+          pkg install -y wget curl git gcc bash gawk gsed pkgconf openssl sqlite3 ca_root_nss
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
         run: |
           export LATEST_APP=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print "v"$5;exit}')
