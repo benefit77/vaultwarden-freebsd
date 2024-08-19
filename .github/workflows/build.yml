@@ -20,8 +20,6 @@ jobs:
           pkg update
           pkg install -y curl git gmake gcc pkgconf openssl sqlite3 ca_root_nss
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.profile
-          source ~/.profile
           rustc --version
           cargo --version
           
