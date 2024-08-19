@@ -12,8 +12,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: compare versions
         run: |
-          export REMOTEVERSION=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print "v"$5;exit}')
-          export LOCALVERSION=$(curl --location --silent --fail --show-error "https://api.github.com/repos/twyoe/vaultwarden-freebsd/releases/latest" | grep -oP '"tag_name":\s*"\K[^"]+')
+          export REMOTEVERSION=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print $4;exit}')
+          export LOCALVERSION=$(wget -qO- https://api.github.com/repos/twyoe/vaultwarden-freebsd/tags | gawk -F '["v]' '/name/{print $4;exit}')
           bash compare.sh
           
       - name: Trigger release
