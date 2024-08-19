@@ -19,11 +19,6 @@ jobs:
         prepare: |
           pkg install -y bash curl git gmake gcc pkgconf openssl sqlite3 ca_root_nss
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          
-    - name: Build Vaultwarden
-      uses: vmactions/freebsd-vm@v1
-      with:
-        usesh: true
         run: |
           source $HOME/.cargo/env
           export LATEST_APP=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print "v"$5;exit}')
