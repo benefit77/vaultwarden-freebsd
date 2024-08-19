@@ -11,14 +11,14 @@ jobs:
     - name: Checkout Vaultwarden
       uses: actions/checkout@v4
 
-    - name: Build Vaultwarden
+    - name: Setup FreeBSD VM
       uses: vmactions/freebsd-vm@v1
       with:
         usesh: true
         release: 13.2
         prepare: |
-          pkg install -y curl
-          pkg install -y gmake gcc pkgconf openssl sqlite3 rustup
+          pkg update
+          pkg install -y curl git rust gmake gcc pkgconf openssl sqlite3
           
     - name: Build Vaultwarden
       uses: vmactions/freebsd-vm@v1
