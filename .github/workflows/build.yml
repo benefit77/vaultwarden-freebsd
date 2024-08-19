@@ -21,6 +21,8 @@ jobs:
           pkg install -y wget curl git gcc bash gawk gsed pkgconf openssl sqlite3 ca_root_nss
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
         run: |
+          . "$HOME/.cargo/env"
+          source "$HOME/.cargo/env.fish"
           cargo --version
 
     - name: Build
