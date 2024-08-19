@@ -19,11 +19,8 @@ jobs:
         prepare: |
           pkg update
           pkg install -y wget curl git gcc bash gawk gsed pkgconf openssl sqlite3 ca_root_nss
-        run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          . "$HOME/.cargo/env"
-          source "$HOME/.cargo/env.fish"
-          
+
     - name: Build
       uses: vmactions/freebsd-vm@v1
       with:
