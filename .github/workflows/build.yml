@@ -21,11 +21,11 @@ jobs:
           pkg install -y wget curl git gcc bash gawk gsed pkgconf openssl rust sqlite3 ca_root_nss
         run: |
           echo "Setting up environment..."
-          export PATH="/usr/local/bin:$PATH"
-          export LATEST_APP=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print $4;exit}')
+          export PATH="/usr/local/bin:/usr/bin:$PATH"
+          export LATEST_APP=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print \$4;exit}')
           git clone -b $LATEST_APP https://github.com/dani-garcia/vaultwarden
           cd vaultwarden
-          cargo build --features sqlite --release
+          /bin/sh -c "cargo build --features sqlite --release"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
