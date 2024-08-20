@@ -20,6 +20,7 @@ jobs:
           pkg update
           pkg install -y wget curl git gcc bash gawk gsed pkgconf openssl sqlite3 ca_root_nss
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          ln -s /usr/local/lib/libssl.so.30 /usr/local/lib/libssl.so.12
         run: |
           . "$HOME/.cargo/env"
           cargo --version
