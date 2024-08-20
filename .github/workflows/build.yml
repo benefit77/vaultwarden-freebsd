@@ -28,7 +28,7 @@ jobs:
           export LATEST_APP=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print $4;exit}')
           git clone -b $LATEST_APP https://github.com/dani-garcia/vaultwarden
           cd vaultwarden
-          cargo build --features sqlite --release
+          cargo build --features mysql --release
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
