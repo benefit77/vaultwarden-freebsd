@@ -18,7 +18,7 @@ jobs:
         release: 14.1
         prepare: |
           pkg update
-          pkg install -y wget curl git gcc bash gawk gsed pkgconf openssl sqlite3 ca_root_nss
+          pkg install -y wget curl git gcc bash gawk gsed pkgconf openssl sqlite3 mysql80-client ca_root_nss
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           ln -sf /usr/lib/libssl.so.30 /usr/local/lib/libssl.so.12
           ln -sf /usr/lib/libcrypto.so.30 /usr/local/lib/libcrypto.so.12
