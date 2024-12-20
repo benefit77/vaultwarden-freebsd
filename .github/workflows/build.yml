@@ -30,7 +30,7 @@ jobs:
           cargo build --features sqlite,mysql,postgresql --release
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@main
       with:
         name: vaultwarden-freebsd-amd64
         path: vaultwarden/target/release/vaultwarden
