@@ -13,7 +13,7 @@ jobs:
       - name: compare versions
         run: |
           export REMOTEVERSION=$(wget -qO- https://api.github.com/repos/dani-garcia/vaultwarden/tags | gawk -F '["v]' '/name/{print $4;exit}')
-          export LOCALVERSION=$(wget -qO- https://api.github.com/repos/twyoe/vaultwarden-freebsd/tags | gawk -F '["v]' '/name/{print $4;exit}')
+          export LOCALVERSION=$(wget -qO- https://api.github.com/repos/benefit77/vaultwarden-freebsd/tags | gawk -F '["v]' '/name/{print $4;exit}')
           bash compare.sh
           
       - name: Trigger release
@@ -23,7 +23,7 @@ jobs:
           github-token: ${{ secrets.PAT_TOKEN }}
           script: |
               await github.rest.actions.createWorkflowDispatch({
-              owner: 'twyoe',
+              owner: 'benefit77',
               repo: 'vaultwarden-freebsd',
               workflow_id: 'build.yml',
               ref: 'main'
